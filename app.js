@@ -1,8 +1,7 @@
 let min = 1,
 	max = 20,
-	guessAttempt = 4,
-	correctGuess = 10,
-	remainingGuess = null;
+	guessAttempt = 5,
+	correctGuess = generateWinningNumber(min, max);
 
 // UI Elements
 const gameBoard = document.querySelector('#game');
@@ -15,6 +14,12 @@ const guessNotification = document.querySelector('.message');
 // Setting Min and Max Values
 minValue.innerText = min;
 maxValue.innerText = max;
+
+gameBoard.addEventListener('mousedown', function (e) {
+	if (e.target.classList.contains('re-attempt')) {
+		window.location.reload();
+	}
+});
 
 guessButton.addEventListener('click', guessEngine);
 
@@ -33,6 +38,9 @@ function guessEngine() {
 	if (guessValue === correctGuess) {
 		message = `Nice! you guessed right, ${guessValue} is correct`;
 		color = 'green';
+		guessButton.value = 'Try Again';
+		guessButton.classList.remove('button-primary');
+		guessButton.classList.add('re-attempt');
 		gameOver(message, color);
 	} else {
 		guessAttempt -= 1;
@@ -40,6 +48,9 @@ function guessEngine() {
 		if (guessAttempt === 0) {
 			message = `Sorry! you guessed wrong, ${guessValue} is isn't the correct value. Game Over!`;
 			color = 'red';
+			guessButton.value = 'Try Again';
+			guessButton.classList.remove('button-primary');
+			guessButton.classList.add('re-attempt');
 			gameOver(message, color);
 		} else {
 			message = `Sorry! you guessed wrong, you have ${guessAttempt} guesses left`;
@@ -51,12 +62,10 @@ function guessEngine() {
 }
 
 function gameOver(message, color) {
-	guessInput.disabled = true;
-	guessButton.disabled = true;
-	if (color === 'orange') {
-		guessInput.disabled = false;
-		guessButton.disabled = false;
-	}
+	color === 'orange'
+		? (guessInput.disabled = false)
+		: (guessInput.disabled = true);
+
 	guessInput.style.borderColor = color;
 	guessInput.style.borderWidth = '2px';
 	setNotification(message, color);
@@ -66,4 +75,8 @@ function setNotification(value, color) {
 	guessNotification.innerText = value;
 	guessNotification.style.color = color;
 	guessNotification.style.fontSize = '1.3rem';
+}
+
+function generateWinningNumber(min, max) {
+	return Math.floor(Math.random() * max) + min;
 }
